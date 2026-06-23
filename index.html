@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copenhagen Church Quiz</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1B2A4A;
+    --gold: #D4A843;
+    --gold-light: #F0C96B;
+    --cream: #F7F3ED;
+    --red: #C0392B;
+    --red-light: #E74C3C;
+    --white: #FFFFFF;
+    --green: #27AE60;
+    --text-dark: #1a1a2e;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* === CROSS BACKGROUND === */
+  .cross-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    opacity: 0.04;
+    background-image:
+      linear-gradient(var(--gold) 0, var(--gold) 100%),
+      linear-gradient(90deg, var(--gold) 0, var(--gold) 100%);
+    background-size: 12px 100%, 100% 12px;
+    background-position: 50% 0, 0 38%;
+    background-repeat: no-repeat;
+  }
+
+  /* === LAYOUT === */
+  .app { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* === HEADER === */
+  header {
+    text-align: center;
+    padding: 24px 0 20px;
+  }
+  .church-icon {
+    display: inline-block;
+    font-size: 48px;
+    animation: sway 4s ease-in-out infinite;
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+  header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    color: var(--gold);
+    margin: 8px 0 4px;
+    letter-spacing: -0.5px;
+  }
+  header p {
+    font-size: 0.9rem;
+    color: #a8b8d0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* === SCREENS === */
+  .screen { display: none; animation: fadeIn 0.4s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* === CARDS === */
+  .card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(212,168,67,0.2);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+  }
+
+  /* === BUTTONS === */
+  .btn {
+    display: inline-block;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy);
+  }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,168,67,0.35); }
+  .btn-outline {
+    background: transparent;
+    color: var(--gold);
+    border: 2px solid var(--gold);
+  }
+  .btn-outline:hover { background: rgba(212,168,67,0.1); }
+  .btn-full { width: 100%; text-align: center; display: block; }
+
+  /* === HOME SCREEN === */
+  .home-hero {
+    text-align: center;
+    padding: 16px 0 24px;
+  }
+  .home-hero h2 {
+    font-family: Georgia, serif;
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    color: var(--white);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .home-hero p {
+    color: #8a9ab5;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+  .flag-strip {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 18px 0;
+    font-size: 1.8rem;
+  }
+  .name-input-wrap { margin: 20px 0; }
+  .name-input-wrap label { display: block; color: var(--gold); font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .name-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(212,168,67,0.3);
+    border-radius: 10px;
+    color: var(--white);
+    font-size: 1.05rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .name-input:focus { border-color: var(--gold); }
+  .name-input::placeholder { color: #6a7a90; }
+
+  .fun-facts { list-style: none; text-align: left; }
+  .fun-facts li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    gap: 10px;
+    color: #a8b8d0;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .fun-facts li span.icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* === QUIZ SCREEN === */
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .q-counter {
+    font-size: 0.85rem;
+    color: #8a9ab5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .score-display {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: var(--gold);
+    font-weight: bold;
+  }
+
+  /* Timer */
+  .timer-wrap { margin-bottom: 16px; }
+  .timer-bar-bg {
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .timer-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 4px;
+    transition: width 1s linear, background 0.5s;
+  }
+  .timer-bar.low { background: linear-gradient(90deg, var(--red), var(--red-light)); }
+  .timer-label {
+    text-align: right;
+    font-size: 0.82rem;
+    color: #8a9ab5;
+    margin-top: 4px;
+  }
+
+  /* Question */
+  .question-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(212,168,67,0.25);
+    border-radius: 14px;
+    padding: 22px 20px;
+    margin-bottom: 16px;
+  }
+  .q-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .q-text {
+    font-family: Georgia, serif;
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    color: var(--white);
+    line-height: 1.5;
+  }
+
+  /* Answer options */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 480px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .option-btn {
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    color: var(--cream);
+    padding: 14px 14px;
+    font-size: 0.93rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.4;
+    position: relative;
+    overflow: hidden;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: rgba(212,168,67,0.12);
+    border-color: rgba(212,168,67,0.5);
+    transform: translateY(-1px);
+  }
+  .option-btn.correct {
+    background: rgba(39,174,96,0.25);
+    border-color: var(--green);
+    color: #7effc0;
+  }
+  .option-btn.wrong {
+    background: rgba(192,57,43,0.25);
+    border-color: var(--red);
+    color: #ffaaaa;
+  }
+  .option-btn:disabled { cursor: default; transform: none; }
+  .option-letter {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: rgba(212,168,67,0.15);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Feedback bar */
+  .feedback-bar {
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 12px;
+    display: none;
+    line-height: 1.4;
+  }
+  .feedback-bar.show { display: block; animation: popIn 0.3s ease; }
+  .feedback-bar.correct { background: rgba(39,174,96,0.2); color: #7effc0; border: 1px solid rgba(39,174,96,0.3); }
+  .feedback-bar.wrong { background: rgba(192,57,43,0.2); color: #ffaaaa; border: 1px solid rgba(192,57,43,0.3); }
+  @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* === RESULT SCREEN === */
+  .result-hero { text-align: center; padding: 10px 0 24px; }
+  .result-score-ring {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 5px solid var(--gold);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    background: rgba(212,168,67,0.08);
+    animation: ringPop 0.6s ease;
+  }
+  @keyframes ringPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .result-score-ring .big-num {
+    font-family: Georgia, serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .result-score-ring .out-of { font-size: 0.8rem; color: #8a9ab5; }
+  .result-message { font-family: Georgia, serif; font-size: 1.3rem; color: var(--white); margin-bottom: 6px; }
+  .result-sub { color: #8a9ab5; font-size: 0.9rem; margin-bottom: 20px; }
+  .result-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* === LEADERBOARD === */
+  .lb-title {
+    font-family: Georgia, serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: all 0.2s;
+  }
+  .lb-row.top1 { background: rgba(212,168,67,0.12); border-color: rgba(212,168,67,0.3); }
+  .lb-row.top2 { background: rgba(180,180,210,0.08); border-color: rgba(180,180,210,0.2); }
+  .lb-row.top3 { background: rgba(180,120,70,0.08); border-color: rgba(180,120,70,0.2); }
+  .lb-row.current-player { border-color: var(--gold) !important; }
+  .lb-rank { font-size: 1rem; width: 28px; text-align: center; flex-shrink: 0; }
+  .lb-name { flex: 1; font-weight: 600; color: var(--white); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lb-score { font-family: Georgia, serif; font-weight: bold; color: var(--gold); font-size: 1rem; }
+  .lb-pct { font-size: 0.78rem; color: #8a9ab5; margin-left: 4px; }
+  .lb-empty { text-align: center; color: #6a7a90; padding: 20px 0; font-size: 0.9rem; }
+
+  /* Confetti */
+  .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    top: -20px;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cross-bg"></div>
+<div id="confettiWrap" class="confetti-wrap"></div>
+
+<div class="app">
+  <header>
+    <div class="church-icon">⛪</div>
+    <h1>Copenhagen Church Quiz</h1>
+    <p>ABA Messenger Meeting · Building Fund</p>
+  </header>
+
+  <!-- HOME SCREEN -->
+  <div id="homeScreen" class="screen active">
+    <div class="card home-hero">
+      <div class="flag-strip">🇩🇰 🙏 🇺🇸</div>
+      <h2>Help us build a church<br>in Copenhagen, Denmark!</h2>
+      <p>Test your knowledge about Copenhagen, Danish culture, and Baptist history — and learn about our exciting building project along the way!</p>
+      <div class="name-input-wrap">
+        <label for="playerName">Your Name</label>
+        <input type="text" id="playerName" class="name-input" placeholder="Enter your name to play..." maxlength="24" />
+      </div>
+      <button class="btn btn-gold btn-full" onclick="startGame()">Start the Quiz! 🎉</button>
+    </div>
+
+    <div class="card">
+      <div class="lb-title">🏆 Leaderboard</div>
+      <div id="homeLeaderboard"></div>
+    </div>
+
+    <div class="card">
+      <ul class="fun-facts">
+        <li><span class="icon">🏗️</span> We are raising funds to build a Baptist church in Copenhagen — one of the most unchurched cities in the world.</li>
+        <li><span class="icon">🌍</span> Denmark has ~6 million people, with less than 2% identifying as evangelical Christian.</li>
+        <li><span class="icon">🤝</span> Your support changes lives and plants the Gospel in Scandinavia.</li>
+        <li><span class="icon">📖</span> American Baptist Association has been planting churches globally since 1924.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quizScreen" class="screen">
+    <div class="quiz-header">
+      <div class="q-counter" id="qCounter">Question 1 / 10</div>
+      <div class="score-display" id="scoreDisplay">Score: 0</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-bar-bg"><div class="timer-bar" id="timerBar"></div></div>
+      <div class="timer-label" id="timerLabel">15s</div>
+    </div>
+    <div class="question-card">
+      <div class="q-category" id="qCategory"></div>
+      <div class="q-text" id="qText"></div>
+    </div>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="feedback-bar" id="feedbackBar"></div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen" class="screen">
+    <div class="card result-hero">
+      <div class="result-score-ring">
+        <div class="big-num" id="finalScore">0</div>
+        <div class="out-of" id="finalOutOf">/ 10</div>
+      </div>
+      <div class="result-message" id="resultMessage">Great job!</div>
+      <div class="result-sub" id="resultSub"></div>
+      <div class="result-btns">
+        <button class="btn btn-gold" onclick="playAgain()">Play Again</button>
+        <button class="btn btn-outline" onclick="showLeaderboardScreen()">Leaderboard</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="lb-title">🏆 Top Players</div>
+      <div id="resultLeaderboard"></div>
+    </div>
+    <div class="card" style="text-align:center; padding: 20px;">
+      <p style="color:var(--gold); font-family:Georgia,serif; font-size:1.1rem; margin-bottom:8px;">Want to support the Copenhagen mission?</p>
+      <p style="color:#8a9ab5; font-size:0.9rem; line-height:1.6;">Visit our booth to learn how your gift helps plant a Baptist church in Denmark. <strong style="color:var(--cream)">Every dollar builds something eternal.</strong></p>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD SCREEN -->
+  <div id="leaderboardScreen" class="screen">
+    <div class="card">
+      <div class="lb-title">🏆 All-Time Leaderboard</div>
+      <div id="fullLeaderboard"></div>
+    </div>
+    <div style="text-align:center; margin-top:16px;">
+      <button class="btn btn-gold" onclick="showScreen('homeScreen')">Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== QUESTIONS =====================
+const ALL_QUESTIONS = [
+  // Copenhagen & Denmark
+  { cat: "🇩🇰 Copenhagen", q: "Copenhagen is the capital of which Scandinavian country?", opts: ["Norway","Sweden","Denmark","Finland"], ans: 2 },
+  { cat: "🇩🇰 Danish Culture", q: "What is the famous Danish concept of coziness and contentment called?", opts: ["Lagom","Hygge","Sisu","Fika"], ans: 1 },
+  { cat: "🇩🇰 Copenhagen", q: "The Little Mermaid statue in Copenhagen was inspired by a story by which author?", opts: ["Grimm Brothers","Hans Christian Andersen","Jules Verne","Charles Perrault"], ans: 1 },
+  { cat: "🇩🇰 Denmark Facts", q: "Approximately how many people live in Denmark?", opts: ["2 million","4 million","6 million","10 million"], ans: 2 },
+  { cat: "🇩🇰 Danish History", q: "What is the name of Denmark's royal palace located in Copenhagen?", opts: ["Windsor Castle","Amalienborg","Frederiksborg","Christiansborg"], ans: 1 },
+  { cat: "🇩🇰 Geography", q: "Copenhagen sits on the eastern coast of which island?", opts: ["Funen","Bornholm","Zealand","Jutland"], ans: 2 },
+  { cat: "🇩🇰 Copenhagen", q: "What famous amusement park, one of the world's oldest, is located in central Copenhagen?", opts: ["Disneyland","Tivoli Gardens","Legoland","Europa-Park"], ans: 1 },
+  { cat: "🇩🇰 Danish Culture", q: "Which of these is a traditional Danish pastry?", opts: ["Croissant","Strudel","Wienerbrød","Sfogliatella"], ans: 2 },
+  // Baptist & Bible
+  { cat: "✝️ Baptist History", q: "In what year was the American Baptist Association (ABA) formed?", opts: ["1890","1905","1924","1950"], ans: 2 },
+  { cat: "✝️ Baptist Beliefs", q: "Which of these is a core Baptist belief?", opts: ["Infant baptism","Salvation by works","Believer's baptism","Church-state union"], ans: 2 },
+  { cat: "✝️ Bible Knowledge", q: "Jesus said 'Go into all the world and preach the gospel.' This is known as:", opts: ["The Beatitudes","The Lord's Prayer","The Great Commission","The Sermon on the Mount"], ans: 2 },
+  { cat: "✝️ Church Missions", q: "Scandinavia is considered one of the most 'unchurched' regions. What % of Danes regularly attend church?", opts: ["25%","15%","5%","Less than 2%"], ans: 3 },
+  { cat: "✝️ Bible Knowledge", q: "Which apostle is known as 'the apostle to the Gentiles'?", opts: ["Peter","James","Paul","John"], ans: 2 },
+  { cat: "✝️ Baptist History", q: "Where was the first Baptist church established?", opts: ["London, England","Amsterdam, Netherlands","Boston, USA","Geneva, Switzerland"], ans: 1 },
+  { cat: "✝️ Bible Geography", q: "In the Bible, which sea did Moses part to lead the Israelites to freedom?", opts: ["Dead Sea","Mediterranean Sea","Red Sea","Sea of Galilee"], ans: 2 },
+  // Fun / General
+  { cat: "🌍 World Geography", q: "What currency is used in Denmark?", opts: ["Euro","Swedish Krona","Danish Krone","Norwegian Krone"], ans: 2 },
+  { cat: "🌍 Fun Facts", q: "Denmark is consistently ranked one of the happiest countries. What survey produces this ranking?", opts: ["Forbes Happiness Index","UN World Happiness Report","National Geographic Survey","Gallup World Poll"], ans: 1 },
+  { cat: "🏗️ Our Mission", q: "What type of building is our booth raising funds for in Copenhagen?", opts: ["A school","A hospital","A church","A community center"], ans: 2 },
+  { cat: "🏗️ Our Mission", q: "Which denomination is planting a church in Copenhagen through this fundraising effort?", opts: ["Methodist","Lutheran","Southern Baptist","American Baptist Association"], ans: 3 },
+  { cat: "🌍 Nordic Culture", q: "What is the national language of Denmark?", opts: ["Swedish","Norwegian","Finnish","Danish"], ans: 3 },
+];
+
+// ===================== STATE =====================
+let playerName = '';
+let currentQs = [];
+let currentIdx = 0;
+let score = 0;
+let timerInterval = null;
+let timeLeft = 15;
+let answered = false;
+let leaderboard = JSON.parse(localStorage.getItem('cph_leaderboard') || '[]');
+
+// ===================== UTILS =====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function saveLeaderboard() {
+  localStorage.setItem('cph_leaderboard', JSON.stringify(leaderboard));
+}
+
+function renderLeaderboard(containerId, highlightName) {
+  const el = document.getElementById(containerId);
+  const sorted = [...leaderboard].sort((a, b) => b.score - a.score).slice(0, 10);
+  if (sorted.length === 0) {
+    el.innerHTML = '<div class="lb-empty">No scores yet — be the first! 🎉</div>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  el.innerHTML = sorted.map((entry, i) => {
+    const rankClass = i < 3 ? `top${i+1}` : '';
+    const isCurrent = entry.name === highlightName && entry._latest;
+    const pct = Math.round((entry.score / entry.total) * 100);
+    return `<div class="lb-row ${rankClass} ${isCurrent ? 'current-player' : ''}">
+      <div class="lb-rank">${medals[i] || (i+1)}</div>
+      <div class="lb-name">${escHtml(entry.name)}${isCurrent ? ' 👈' : ''}</div>
+      <div class="lb-score">${entry.score}<span class="lb-pct">${pct}%</span></div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function getResultMessage(pct) {
+  if (pct === 100) return { msg: 'Perfect Score! 🎉', sub: 'You\'re a Copenhagen & Baptist expert!' };
+  if (pct >= 80) return { msg: 'Excellent! 🌟', sub: 'Outstanding knowledge — you\'d love Copenhagen!' };
+  if (pct >= 60) return { msg: 'Well Done! 👏', sub: 'Solid score! Come chat with us at the booth.' };
+  if (pct >= 40) return { msg: 'Good Effort! 😊', sub: 'You learned something new today!' };
+  return { msg: 'Keep Learning! 📖', sub: 'Visit our booth to discover more about Copenhagen!' };
+}
+
+// ===================== GAME FLOW =====================
+function startGame() {
+  const nameInput = document.getElementById('playerName').value.trim();
+  if (!nameInput) {
+    document.getElementById('playerName').focus();
+    document.getElementById('playerName').style.borderColor = '#E74C3C';
+    setTimeout(() => document.getElementById('playerName').style.borderColor = '', 1500);
+    return;
+  }
+  playerName = nameInput;
+  score = 0;
+  currentIdx = 0;
+  currentQs = shuffle(ALL_QUESTIONS).slice(0, 10);
+  showScreen('quizScreen');
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  clearInterval(timerInterval);
+  timeLeft = 15;
+
+  const q = currentQs[currentIdx];
+  document.getElementById('qCounter').textContent = `Question ${currentIdx + 1} / ${currentQs.length}`;
+  document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+  document.getElementById('qCategory').textContent = q.cat;
+  document.getElementById('qText').textContent = q.q;
+
+  // Shuffle option display order
+  const letters = ['A','B','C','D'];
+  const indices = shuffle([0,1,2,3]);
+  const correctDisplayIdx = indices.indexOf(q.ans);
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  indices.forEach((origIdx, displayIdx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[displayIdx]}</span>${escHtml(q.opts[origIdx])}`;
+    btn.onclick = () => selectAnswer(origIdx, correctDisplayIdx, displayIdx, q);
+    grid.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedbackBar');
+  fb.className = 'feedback-bar';
+  fb.textContent = '';
+
+  startTimer(correctDisplayIdx);
+}
+
+function startTimer(correctDisplayIdx) {
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) timeOut(correctDisplayIdx);
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const bar = document.getElementById('timerBar');
+  const pct = (timeLeft / 15) * 100;
+  bar.style.width = pct + '%';
+  bar.className = 'timer-bar' + (timeLeft <= 5 ? ' low' : '');
+  document.getElementById('timerLabel').textContent = timeLeft + 's';
+}
+
+function selectAnswer(origIdx, correctDisplayIdx, chosenDisplayIdx, q) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const buttons = document.getElementById('optionsGrid').querySelectorAll('.option-btn');
+  const isCorrect = origIdx === q.ans;
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    // The correct display index corresponds to correctDisplayIdx
+  });
+
+  // Mark correct/wrong
+  buttons[correctDisplayIdx].classList.add('correct');
+  if (!isCorrect) buttons[chosenDisplayIdx].classList.add('wrong');
+
+  const fb = document.getElementById('feedbackBar');
+  if (isCorrect) {
+    const pts = Math.max(1, timeLeft);
+    score += pts;
+    fb.textContent = `✅ Correct! +${pts} point${pts !== 1 ? 's' : ''} (${timeLeft}s bonus)`;
+    fb.className = 'feedback-bar show correct';
+  } else {
+    fb.textContent = `❌ Not quite! The correct answer was highlighted in green.`;
+    fb.className = 'feedback-bar show wrong';
+  }
+
+  document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+
+  setTimeout(() => {
+    currentIdx++;
+    if (currentIdx < currentQs.length) showQuestion();
+    else endGame();
+  }, 2000);
+}
+
+function timeOut(correctDisplayIdx) {
+  answered = true;
+  const buttons = document.getElementById('optionsGrid').querySelectorAll('.option-btn');
+  buttons.forEach(btn => btn.disabled = true);
+  buttons[correctDisplayIdx].classList.add('correct');
+  const fb = document.getElementById('feedbackBar');
+  fb.textContent = '⏰ Time\'s up! See the correct answer above.';
+  fb.className = 'feedback-bar show wrong';
+  setTimeout(() => {
+    currentIdx++;
+    if (currentIdx < currentQs.length) showQuestion();
+    else endGame();
+  }, 2200);
+}
+
+function endGame() {
+  const total = currentQs.length;
+  const pct = Math.round((score / (total * 15)) * 100); // out of max pts
+
+  // Save to leaderboard
+  leaderboard.forEach(e => e._latest = false);
+  leaderboard.push({ name: playerName, score, total, pct, _latest: true, date: Date.now() });
+  leaderboard.sort((a, b) => b.score - a.score);
+  if (leaderboard.length > 50) leaderboard = leaderboard.slice(0, 50);
+  saveLeaderboard();
+
+  document.getElementById('finalScore').textContent = score;
+  const maxPts = total * 15;
+  document.getElementById('finalOutOf').textContent = `/ ${maxPts} pts`;
+
+  const { msg, sub } = getResultMessage(score / maxPts * 100);
+  document.getElementById('resultMessage').textContent = msg;
+  document.getElementById('resultSub').textContent = `${score} out of ${maxPts} possible points`;
+
+  renderLeaderboard('resultLeaderboard', playerName);
+  showScreen('resultScreen');
+
+  if (score / maxPts >= 0.7) launchConfetti();
+}
+
+function playAgain() {
+  showScreen('homeScreen');
+  renderLeaderboard('homeLeaderboard', '');
+}
+
+function showLeaderboardScreen() {
+  renderLeaderboard('fullLeaderboard', playerName);
+  showScreen('leaderboardScreen');
+}
+
+// ===================== CONFETTI =====================
+function launchConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  const colors = ['#D4A843','#C0392B','#FFFFFF','#1B2A4A','#27AE60','#F0C96B'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left: ${Math.random() * 100}%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      width: ${6 + Math.random() * 8}px;
+      height: ${6 + Math.random() * 8}px;
+      animation-duration: ${2 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * 0.8}s;
+    `;
+    wrap.appendChild(el);
+  }
+  setTimeout(() => wrap.innerHTML = '', 4000);
+}
+
+// ===================== INIT =====================
+renderLeaderboard('homeLeaderboard', '');
+document.getElementById('playerName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startGame();
+});
+</script>
+</body>
+</html>
+
