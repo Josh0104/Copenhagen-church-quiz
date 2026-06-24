@@ -375,7 +375,7 @@
 <div class="app">
   <header>
     <div class="church-icon">⛪</div>
-    <h1>Copenhagen Church Quiz</h1>
+    <h1> Game Quiz</h1>
     <p>ABA Messenger Meeting · Building Fund</p>
   </header>
 
@@ -384,7 +384,7 @@
     <div class="card home-hero">
       <div class="flag-strip">🇩🇰 🙏 🇺🇸</div>
       <h2>Help us build a church<br>in Copenhagen, Denmark!</h2>
-      <p>Test your knowledge about Copenhagen, Danish culture, and Baptist history — and learn about our exciting building project along the way!</p>
+      <p>Test your knowledge about Denmark, European Biblical History and the Bible</p>
       <div class="name-input-wrap">
         <label for="playerName">Your Name</label>
         <input type="text" id="playerName" class="name-input" placeholder="Enter your name to play..." maxlength="24" />
@@ -399,10 +399,10 @@
 
     <div class="card">
       <ul class="fun-facts">
-        <li><span class="icon">🏗️</span> We are raising funds to build a Baptist church in Copenhagen — one of the most unchurched cities in the world.</li>
+        <li><span class="icon">🏗️</span> We are raising funds to build a Baptist church in Copenhagen — one of many secular cities in Europe.</li>
         <li><span class="icon">🌍</span> Denmark has ~6 million people, with less than 2% identifying as evangelical Christian.</li>
         <li><span class="icon">🤝</span> Your support changes lives and plants the Gospel in Scandinavia.</li>
-        <li><span class="icon">📖</span> American Baptist Association has been planting churches globally since 1924.</li>
+        <li><span class="icon">📖</span>KJV was published in 1611 and was commissioned by King James I of England.</li>
       </ul>
     </div>
   </div>
@@ -467,10 +467,7 @@ const ALL_QUESTIONS = [
   // Copenhagen & Denmark
   { cat: "🇩🇰 Copenhagen", q: "Copenhagen is the capital of which Scandinavian country?", opts: ["Norway","Sweden","Denmark","Finland"], ans: 2 },
   { cat: "🇩🇰 Danish Culture", q: "What is the famous Danish concept of coziness and contentment called?", opts: ["Lagom","Hygge","Sisu","Fika"], ans: 1 },
-  { cat: "🇩🇰 Copenhagen", q: "The Little Mermaid statue in Copenhagen was inspired by a story by which author?", opts: ["Grimm Brothers","Hans Christian Andersen","Jules Verne","Charles Perrault"], ans: 1 },
   { cat: "🇩🇰 Denmark Facts", q: "Approximately how many people live in Denmark?", opts: ["2 million","4 million","6 million","10 million"], ans: 2 },
-  { cat: "🇩🇰 Danish History", q: "What is the name of Denmark's royal palace located in Copenhagen?", opts: ["Windsor Castle","Amalienborg","Frederiksborg","Christiansborg"], ans: 1 },
-  { cat: "🇩🇰 Copenhagen", q: "What famous amusement park, one of the world's oldest, is located in central Copenhagen?", opts: ["Disneyland","Tivoli Gardens","Legoland","Europa-Park"], ans: 1 },
   { cat: "🇩🇰 Scandinavia", q: "Which country is not part of Scandinavia?", opts: ["Denmark","Sweden","Norway","Finland"], ans: 3 },
   { cat: "🇩🇰 Danish Religion", q: "What is the primary denomination in Denmark?", opts: ["Catholic","Baptist","Protestant","Orthodox"], ans: 2 },
   { cat: "🇩🇰 Danish Religion", q: "According to Danish statistics, how many Danes go to church weekly?", opts: ["2.4%","7.1%","15.5%","23.2%"], ans: 0 },
@@ -479,16 +476,27 @@ const ALL_QUESTIONS = [
   { cat: "✝️ Bible Knowledge", q: "Jesus said 'Go into all the world and preach the gospel.' This is known as:", opts: ["The Beatitudes","The Lord's Prayer","The Great Commission","The Sermon on the Mount"], ans: 2 },
   { cat: "✝️ Bible Knowledge", q: "Which apostle is known as 'the apostle to the Gentiles'?", opts: ["Peter","James","Paul","John"], ans: 2 },
   { cat: "✝️ Bible Geography", q: "In the Bible, which sea did Moses part to lead the Israelites to freedom?", opts: ["Dead Sea","Mediterranean Sea","Red Sea","Sea of Galilee"], ans: 2 },
+  { cat: "✝️ Bible Easy", q: "What sign did God give Noah after the flood?", opts: ["A star","A rainbow","A cloud","A fire"], ans: 1 },
+  { cat: "✝️ Bible Medium", q: "Who was Abraham's wife?", opts: ["Rachel","Sarah","Rebekah","Leah"], ans: 1 },
+  { cat: "✝️ Bible Medium", q: "Who was the first king of Israel?", opts: ["David","Saul","Solomon","Samuel"], ans: 1 },
+  { cat: "✝️ Bible Medium", q: "What did Jesus calm during a storm?", opts: ["The wind and sea","The crowd","The temple","The desert"], ans: 0 },
+  { cat: "✝️ Bible Medium", q: "Which king built the first temple in Jerusalem?", opts: ["David","Saul","Solomon","Hezekiah"], ans: 2 },
+  { cat: "✝️ Bible Hard", q: "Who was the Roman governor who sentenced Jesus to be crucified?", opts: ["Herod Antipas","Pontius Pilate","Felix","Festus"], ans: 1 },
+  { cat: "✝️ Bible Hard", q: "Who asked Pilate for the body of Jesus?", opts: ["Peter","John","Joseph of Arimathea","Andrew"], ans: 2 },
+  { cat: "✝️ Bible Hard", q: "Who was the first Christian martyr in Acts?", opts: ["James","Stephen","Peter","Philip"], ans: 1 },
+  { cat: "✝️ Bible Hard", q: "Which tribe was Paul from?", opts: ["Judah","Benjamin","Levi","Ephraim"], ans: 1 }, 
+  { cat: "✝️ Bible Medium", q: "Which Gospel begins with 'In the beginning was the Word'?", opts: ["Matthew","Mark","Luke","John"], ans: 3 },
+  { cat: "✝️ Bible Medium", q: "Who killed Goliath?", opts: ["Saul","David","Jonathan","Samson"], ans: 1 },
   // Fun / General
   { cat: "🌍 World Geography", q: "What currency is used in Denmark?", opts: ["Euro","Swedish Krona","Danish Krone","Norwegian Krone"], ans: 2 },
   { cat: "🏗️ Our Mission", q: "What type of building is our booth raising funds for in Copenhagen?", opts: ["A school","A hospital","A church","A community center"], ans: 2 },
   { cat: "🌍 Nordic Culture", q: "What is the national language of Denmark?", opts: ["Swedish","Norwegian","Finnish","Danish"], ans: 3 },
 
-  { cat: "⛪ CBMBC", q: "What is the name of the Pastor of Copenhagen Bethel Missionary Baptist Church?", opts: ["Pastor Carroll Williams","Pastor Gerry Calba","Pastor Romy Jardinel","Pastor Erick Cahigas"], ans: 1 },
-  { cat: "⛪ CBMBC", q: "Who was Copenhagen Bethel Missionary Baptist Church's former sponsoring church?", opts: ["Maplewood Baptist Church","Bethel Baptist Church","First Baptist Church","Grace Baptist Church"], ans: 0 },
-  { cat: "⛪ CBMBC Missions", q: "How many missions has Copenhagen Bethel Missionary Baptist Church planted in Europe?", opts: ["2","3","4","5"], ans: 2 },
-  { cat: "⛪ CBMBC History", q: "What year was Copenhagen Bethel Missionary Baptist Church established?", opts: ["2005","1985","1990","1996"], ans: 2 },
-  { cat: "⛪ Bible Words", q: "What is the meaning of the word Bethel?", opts: ["House of Prayer","House of God","Place of Peace","City of David"], ans: 1 },
+  // { cat: "⛪ CBMBC", q: "What is the name of the Pastor of Copenhagen Bethel Missionary Baptist Church?", opts: ["Pastor Carroll Williams","Pastor Gerry Calba","Pastor Romy Jardinel","Pastor Erick Cahigas"], ans: 1 },
+  // { cat: "⛪ CBMBC", q: "Who was Copenhagen Bethel Missionary Baptist Church's former sponsoring church?", opts: ["Maplewood Baptist Church","Bethel Baptist Church","First Baptist Church","Grace Baptist Church"], ans: 0 },
+  // { cat: "⛪ CBMBC Missions", q: "How many missions has Copenhagen Bethel Missionary Baptist Church planted in Europe?", opts: ["2","3","4","5"], ans: 2 },
+  // { cat: "⛪ CBMBC History", q: "What year was Copenhagen Bethel Missionary Baptist Church established?", opts: ["2005","1985","1990","1996"], ans: 2 },
+  // { cat: "⛪ Bible Words", q: "What is the meaning of the word Bethel?", opts: ["House of Prayer","House of God","Place of Peace","City of David"], ans: 1 },
 
   { cat: "✝️ Bible Knowledge", q: "Which Gospel is written by a physician?", opts: ["Matthew","Mark","Luke","John"], ans: 2 },
   { cat: "✝️ Bible Knowledge", q: "Which book comes after the four Gospels?", opts: ["Romans","Acts","Hebrews","Revelation"], ans: 1 },
@@ -503,6 +511,16 @@ const ALL_QUESTIONS = [
   { cat: "🇬🇱 Greenland", q: "Greenland belongs to which country?", opts: ["Norway","United States","Denmark","Iceland"], ans: 2 },
   { cat: "🇪🇺 Europe", q: "Which continent is Denmark located in?", opts: ["Europe","Asia","Africa","South America"], ans: 0 },
   { cat: "🇩🇰 Danish History", q: "What were many early Scandinavians from Denmark, Norway, and Sweden called?", opts: ["Vikings","Romans","Celts","Pharaohs"], ans: 0 },
+  { cat: "🇪🇺 Europe Easy", q: "Which country is not in Europe?", opts: ["Denmark","Sweden","Spain","New Zealand"], ans: 3 },
+  { cat: "🇪🇺 Europe Easy", q: "Which country has the Eiffel Tower?", opts: ["France","Spain","Denmark","Norway"], ans: 0 },
+  { cat: "🇪🇺 Europe Easy", q: "Which country is famous for Big Ben?", opts: ["United Kingdom","Germany","Denmark","Belgium"], ans: 0 },
+  { cat: "🇪🇺 Europe Easy", q: "Which European country is home to LEGO?", opts: ["Denmark","Sweden","Germany","United Kingdom"], ans: 0 },
+  { cat: "📖 Bible History", q: "Where was the first major printed Bible, the Gutenberg Bible, printed?", opts: ["Mainz, Germany","London, England","Rome, Italy","Paris, France"], ans: 0 },
+  { cat: "📖 Bible History", q: "What does KJV stand for?", opts: ["King James Version","King Jesus Version","Kingdom Jewish Version","Knowledge of Jesus Version"], ans: 0 },
+  { cat: "📖 Bible History", q: "Where did the King James Version of the Bible originate?", opts: ["England","Germany","France","Denmark"], ans: 0 },
+  { cat: "📖 Bible History", q: "In what year was the King James Version first published?", opts: ["1382","1455","1611","1776"], ans: 2 },
+  { cat: "📖 Bible History", q: "Which invention helped spread the Bible widely in Europe?", opts: ["Printing press","Telephone","Radio","Steam engine"], ans: 0 },
+  { cat: "📖 Bible History", q: "William Tyndale is known for translating the Bible into which language?", opts: ["English","Spanish","Greek","Latin"], ans: 0 },
 ];
 
 // ===================== STATE =====================
